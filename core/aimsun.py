@@ -1,3 +1,14 @@
+from PyANGBasic import *
+from PyANGKernel import *
+from PyANGConsole import *
+# import logging
+
+# logging.basicConfig(filename="newfile.log",
+#                     format='%(asctime)s %(message)s',
+#                     filemode='w')
+
+# logger = logging.getLogger()
+
 #Objects belong to this class will be executed inside the Aimsun.
 class AimsunTemplate(object):
     """Interface to do scripting with Aimsun.
@@ -6,7 +17,7 @@ class AimsunTemplate(object):
     ones. It provides a pythonic interface to manipulate the different objects
     accessible via scripting.
     """
-    def __init__(self, GKSystem, GKGUISystem):
+    def __init__(self, GKSystem, GKGUISystem = None):
         """Initialize the template.
 
         This assumes that Aimsun is open, as it will try to access the
@@ -35,10 +46,13 @@ class AimsunTemplate(object):
             model = AimsunTemplate(GKSystem, GKGUISystem)
         """
         self.GKSystem = GKSystem
-        self.GKGUISystem = GKGUISystem
-
-        self.gui = self.GKGUISystem.getGUISystem().getActiveGui()
-        self.model = self.gui.getActiveModel()
+        if GKGUISystem:
+            self.GKGUISystem = GKGUISystem
+            self.gui = self.GKGUISystem.getGUISystem().getActiveGui()
+            self.model = self.gui.getActiveModel()
+        else:
+            self.gui = None
+            self.console = ANGConsole()
     
 
     def load(self, path):
@@ -49,8 +63,13 @@ class AimsunTemplate(object):
         path : str
             the path of the template to load
         """
-        self.gui.loadNetwork(path)
-        self.model = self.gui.getActiveModel()
+        if self.gui:
+            self.gui.loadNetwork(path)
+            self.model = self.gui.getActiveModel()
+        elif self.console.open(path):
+           
+            self.model = self.console.getModel() 
+       
         self.__wrap_object(self.model)
 
     
