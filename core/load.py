@@ -27,7 +27,7 @@ logger.info(sys.argv[2])
 # setting path
 project_path = sys.argv[2]
 sys.path.insert(0, project_path)
-from config import TEMPLATE_PATH, CONSOLE_MODE
+from config import TEMPLATE_PATH, CONSOLE_MODE, PROJECT_PATH
 from core.aimsun import AimsunTemplate
 
 # HACK: Store port in author
@@ -56,16 +56,19 @@ logger.info('[load.py] Loading Complete')
 model.setAuthor(port_string)
 
 logger.info("Hello From Aimsun")
-replication_name = "Replication 86011"
+replication_name = "Replication 447"
 replication = model.find_by_name(model.replications, replication_name)
 if replication is None:
     logger.info('[load.py] ERROR: Replication ' + replication_name +
           ' does not exist.')
 # Add API interactions
-# experiment = replication.experiment
-# scenario = experiment.scenario
-# scenario_data = scenario.input_data
-# scenario_data.add_extension(os.path.join(
-#     project_path, 'core/utils/aimsun/run.py'), True)
-model.run_replication(replication=replication, render=False)
+experiment = replication.experiment
+scenario = experiment.scenario
+scenario_data = scenario.input_data
+logger.info('[load.py] Project Path ' + os.path.join(
+    project_path, 'core','server.py'))
+
+scenario_data.add_extension(os.path.join(
+    project_path, 'core','server.py'), True)
+model.run_replication(replication=replication, render=True)
 
